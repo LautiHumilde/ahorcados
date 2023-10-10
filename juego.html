@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Ahorcado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        #word-display {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        #hangman-container {
+            width: 150px;
+            height: 200px;
+            position: relative;
+            margin: 20px auto;
+        }
+        .hangman-part {
+            position: absolute;
+            background-color: #333;
+            display: block;
+        }
+        #head {
+            top: 0;
+            left: 65px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        #body {
+            top: 20px;
+            left: 75px;
+            width: 5px;
+            height: 60px;
+        }
+        #left-arm {
+            top: 30px;
+            left: 60px;
+            width: 15px;
+            height: 5px;
+            transform: rotate(-45deg);
+        }
+        #right-arm {
+            top: 30px;
+            left: 75px;
+            width: 15px;
+            height: 5px;
+            transform: rotate(45deg);
+        }
+        #left-leg {
+            top: 80px;
+            left: 65px;
+            width: 15px;
+            height: 5px;
+            transform: rotate(-45deg);
+        }
+        #right-leg {
+            top: 80px;
+            left: 75px;
+            width: 15px;
+            height: 5px;
+            transform: rotate(45deg);
+        }
+        #letters-guessed {
+            margin-top: 20px;
+        }
+        #definition {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Juego de Ahorcado - Adivina por qué nuestra revista se llama así</h1>
+    
+    <div id="word-display"></div>
+    
+    <div id="hangman-container">
+        <div id="head" class="hangman-part"></div>
+        <div id="body" class="hangman-part"></div>
+        <div id="left-arm" class="hangman-part"></div>
+        <div id="right-arm" class="hangman-part"></div>
+        <div id="left-leg" class="hangman-part"></div>
+        <div id="right-leg" class="hangman-part"></div>
+    </div>
+
+    <div id="letters-guessed">Letras Adivinadas: </div>
+    
+    <script>
+        const wordToGuess = "CIENCIA".toUpperCase();
+        const wordDefinition = "La ciencia es el conjunto de conocimientos obtenidos mediante la observación y el razonamiento, sistemáticamente estructurados y de los que se deducen principios y leyes generales.";
+
+        let guessedWord = "_".repeat(wordToGuess.length).split('');
+        let incorrectGuesses = 0;
+        let maxIncorrectGuesses = 6;
+        let lettersGuessed = [];
+
+        function updateDisplay() {
+            document.getElementById('word-display').innerText = guessedWord.join(' ');
+            document.getElementById('letters-guessed').innerText = `Letras Adivinadas: ${lettersGuessed.join(', ')}`;
+        }
+
+        function hideHangmanPart(partId) {
+            document.getElementById(partId).style.display = 'none';
+        }
+
+        function drawHangman() {
+            const hangmanParts = ["head", "body", "left-arm", "right-arm", "left-leg", "right-leg"];
+            hideHangmanPart(hangmanParts[incorrectGuesses]);
+        }
+
+        function checkGuess(letter) {
+            if (lettersGuessed.includes(letter)) {
+                // Solo mostrar aviso si la letra ingresada es incorrecta y aún no se ha utilizado
+                if (!wordToGuess.includes(letter)) {
+                    alert(`Ya has intentado con la letra ${letter}. Intenta con otra.`);
+                }
+                return;
+            }
+
+            lettersGuessed.push(letter);
+
+            if (wordToGuess.includes(letter)) {
+                for (let i = 0; i < wordToGuess.length; i++) {
+                    if (wordToGuess[i] === letter) {
+                        guessedWord[i] = letter;
+                    }
+                }
+            } else {
+                incorrectGuesses++;
+                drawHangman();
+            }
+
+            updateDisplay();
+
+            if (guessedWord.join('') === wordToGuess) {
+                showDefinition();
+                alert('¡Felicidades! ¡Has ganado!');
+            } else if (incorrectGuesses >= maxIncorrectGuesses) {
+                showDefinition();
+                alert('¡Perdiste, gil! La palabra correcta era: ' + wordToGuess);
+            }
+        }
+
+        function showDefinition() {
+            document.getElementById('definition').innerHTML = `
+                <h2>Definición de CIENCIA:</h2>
+                <p>${wordDefinition}</p>
+            `;
+        }
+
+        updateDisplay();
+    </script>
+
+    <p>Ingresa una letra: <input type="text" maxlength="1" oninput="this.value = this.value.toUpperCase()" onkeyup="checkGuess(this.value)"></p>
+
+    <div id="definition">
+        <h2>Definición de la palabra:</h2>
+        <p>palabra de 7 letras que empieza con C , conjunto de conocimientos ordenados sistematicamente con el fin de describir realidades y de dar respuestas a diversos interrogantes</p>
+    </div>
+
+</body>
+</html>
