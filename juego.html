@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juego de Ahorcado</title>
+    <title>Juego de Ahorcado - Adivina la Palabra</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -69,14 +69,14 @@
         #letters-guessed {
             margin-top: 20px;
         }
-        #definition {
+        #description {
             margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Juego de Ahorcado - Adivina por qué nuestra revista se llama así</h1>
+    <h1>Juego de Ahorcado - Adivina la Palabra</h1>
     
     <div id="word-display"></div>
     
@@ -91,11 +91,20 @@
 
     <div id="letters-guessed">Letras Adivinadas: </div>
     
-    <script>
-        const wordToGuess = "CIENCIA".toUpperCase();
-        const wordDefinition = "La ciencia es el conjunto de conocimientos obtenidos mediante la observación y el razonamiento, sistemáticamente estructurados y de los que se deducen principios y leyes generales.";
+    <div id="description"></div>
 
-        let guessedWord = "_".repeat(wordToGuess.length).split('');
+    <script>
+        const levels = [
+            { word: "CIENCIA", description: "Conjunto de conocimientos ordenados sistemáticamente con el fin de describir realidades y de dar respuestas a diversos interrogantes." },
+            { word: "CONOCIMIENTO", description: "Capacidad que tiene el ser humano para identificar, observar y analizar lo que sucede en la realidad y lo utiliza para su beneficio." },
+            // Puedes agregar más niveles aquí
+        ];
+
+        let currentLevel = 0;
+        let wordToGuess = levels[currentLevel].word.toUpperCase();
+        let wordDescription = levels[currentLevel].description;
+
+        let guessedWord = Array(wordToGuess.length).fill('_');
         let incorrectGuesses = 0;
         let maxIncorrectGuesses = 6;
         let lettersGuessed = [];
@@ -139,30 +148,86 @@
             updateDisplay();
 
             if (guessedWord.join('') === wordToGuess) {
-                showDefinition();
                 alert('¡Felicidades! ¡Has ganado!');
+                nextLevel();
             } else if (incorrectGuesses >= maxIncorrectGuesses) {
-                showDefinition();
                 alert('¡Perdiste, gil! La palabra correcta era: ' + wordToGuess);
+                resetGame();
             }
         }
 
-        function showDefinition() {
-            document.getElementById('definition').innerHTML = `
-                <h2>Definición de CIENCIA:</h2>
-                <p>${wordDefinition}</p>
+        function showHint() {
+            showDescription();
+        }
+
+        function showDescription() {
+            const descriptionDiv = document.getElementById('description');
+            descriptionDiv.innerHTML = `
+                <h2>Descripción:</h2>
+                <p>${wordDescription}</p>
             `;
         }
 
-        updateDisplay();
+        function nextLevel() {
+            currentLevel++;
+            if (currentLevel < levels.length) {
+                wordToGuess = levels[currentLevel].word.toUpperCase();
+                wordDescription = levels[currentLevel].description;
+                guessedWord = Array(wordToGuess.length).fill('_');
+                incorrectGuesses = 0;
+                lettersGuessed = [];
+                updateDisplay();
+                resetHangman();
+                // Limpiar la descripción al pasar al siguiente nivel
+                document.getElementById('description').innerHTML = '';
+                showLetterCount(); // Agregamos esta línea para mostrar la cantidad de letras al pasar al siguiente nivel
+            } else {
+                alert('¡Felicidades! Has completado todos los niveles.');
+                resetGame();
+            }
+        }
+
+        function resetGame() {
+            currentLevel = 0;
+            wordToGuess = levels[currentLevel].word.toUpperCase();
+            wordDescription = levels[currentLevel].description;
+            guessedWord = Array(wordToGuess.length).fill('_');
+            incorrectGuesses = 0;
+            lettersGuessed = [];
+            updateDisplay();
+            resetHangman();
+            showLetterCount(); // Agregamos esta línea para mostrar la cantidad de letras al reiniciar el juego
+        }
+
+        function resetHangman() {
+            const hangmanParts = ["head", "body", "left-arm", "right-arm", "left-leg", "right-leg"];
+            for (const partId of hangmanParts) {
+                document.getElementById(partId).style.display = 'block';
+            }
+        }
+
+        function toggleHintButton() {
+            const button = document.getElementById('hint-button');
+            if (button.innerText === 'Obtener Pista') {
+                showHint();
+                button.innerText = 'Ocultar Pista';
+            } else {
+                document.getElementById('description').innerHTML = '';
+                button.innerText = 'Obtener Pista';
+            }
+        }
+
+        function showLetterCount() {
+            const letterCountDiv = document.getElementById('letter-count');
+            letterCountDiv.innerText = `Cantidad de letras: ${wordToGuess.length}`;
+        }
     </script>
 
     <p>Ingresa una letra: <input type="text" maxlength="1" oninput="this.value = this.value.toUpperCase()" onkeyup="checkGuess(this.value)"></p>
 
-    <div id="definition">
-        <h2>Definición de la palabra:</h2>
-        <p>palabra de 7 letras que empieza con C , conjunto de conocimientos ordenados sistematicamente con el fin de describir realidades y de dar respuestas a diversos interrogantes</p>
-    </div>
+    <button id="hint-button" onclick="toggleHintButton()">Obtener Pista</button>
+
+    <div id="letter-count"></div>
 
 </body>
 </html>
