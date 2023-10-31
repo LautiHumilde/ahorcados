@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
+<head>  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego de Ahorcado - Adivina la Palabra</title>
@@ -8,11 +8,33 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin: 50px;
+            margin: 0;
+            overflow: hidden;
+        }
+        .section-box {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            z-index: 2;
+        }
+        .section-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 1;
+        }
+        .section-button {
+            font-size: 1.2em;
+            padding: 10px;
+            cursor: pointer;
         }
         #word-display {
             font-size: 2em;
-            margin-bottom: 20px;
+            margin-top: 50px;
         }
         #hangman-container {
             width: 150px;
@@ -76,8 +98,21 @@
 </head>
 <body>
 
+    <!-- Sección C -->
+    <div class="section-box" id="section-C"></div>
+    <!-- Sección I -->
+    <div class="section-box" id="section-I"></div>
+    <!-- Sección T -->
+    <div class="section-box" id="section-T"></div>
+
     <h1>Juego de Ahorcado - Adivina la Palabra</h1>
-    
+
+    <div class="section-buttons">
+        <div class="section-button" onclick="selectSection('C')">Sección C</div>
+        <div class="section-button" onclick="selectSection('I')">Sección I</div>
+        <div class="section-button" onclick="selectSection('T')">Sección T</div>
+    </div>
+
     <div id="word-display"></div>
     
     <div id="hangman-container">
@@ -94,15 +129,37 @@
     <div id="description"></div>
 
     <script>
-        const levels = [
-            { word: "CIENCIA", description: "Conjunto de conocimientos ordenados sistemáticamente con el fin de describir realidades y de dar respuestas a diversos interrogantes." },
-            { word: "CONOCIMIENTO", description: "Capacidad que tiene el ser humano para identificar, observar y analizar lo que sucede en la realidad y lo utiliza para su beneficio." },
-            // Puedes agregar más niveles aquí
-        ];
+        const levels = {
+            'C': [
+                { word: "COMPUTACION", description: "Proceso de diseñar y construir un sistema de cómputo, incluyendo hardware y software. (11 letras)" },
+                { word: "COMUNICACION", description: "Intercambio de información entre dos o más partes, utilizando símbolos, palabras o gestos. (13 letras)" },
+                { word: "CREATIVIDAD", description: "Facultad de crear, inventar y producir nuevas ideas, conceptos o cosas originales. (11 letras)" },
+                { word: "CULTURA", description: "Conjunto de conocimientos, costumbres, creencias y valores que caracterizan a un grupo social. (7 letras)" },
+                { word: "CIBERNETICA", description: "Ciencia que estudia los sistemas de control, comunicación y regulación en seres vivos y máquinas. (11 letras)" },
+                { word: "CIRCUITO", description: "Conjunto de componentes electrónicos interconectados que realizan una función específica. (8 letras)" },
+            ],
+            'I': [
+                { word: "INOVACION", description: "Introducción de novedades o cambios en un producto, idea o proceso. (9 letras)" },
+                { word: "INTELIGENCIA", description: "Capacidad de aprender, razonar, resolver problemas y adaptarse al entorno. (10 letras)" },
+                { word: "IMAGINACION", description: "Facultad de crear imágenes, ideas o conceptos en la mente que no están presentes en la realidad. (11 letras)" },
+                { word: "IDENTIDAD", description: "Conjunto de características que individualizan a una persona o cosa y la distinguen de las demás. (9 letras)" },
+                { word: "IGUALDAD", description: "Principio que postula la equiparación de derechos, oportunidades y trato para todas las personas. (7 letras)" },
+                { word: "IMPREDICIBLE", description: "Que no se puede prever ni anticipar con certeza. (12 letras)" },
+            ],
+            'T': [
+                { word: "TENDENCIA", description: "Dirección o inclinación hacia cierto modo de comportamiento, pensamiento o acción. (8 letras)" },
+                { word: "TRANSFORMAR", description: "Cambiar la forma, naturaleza o estructura de algo. (11 letras)" },
+                { word: "TECNOLOGIA", description: "Conjunto de conocimientos y técnicas aplicadas para el desarrollo de productos y servicios. (10 letras)" },
+                { word: "TRABAJO", description: "Actividad que realiza una persona para producir bienes o servicios a cambio de una compensación. (7 letras)" },
+                { word: "TENACIDAD", description: "Persistencia y firmeza en la realización de un objetivo a pesar de las dificultades. (8 letras)" },
+                { word: "TALENTO", description: "Capacidad natural o habilidad especial para realizar ciertas actividades de manera destacada. (7 letras)" },
+            ],
+        };
 
+        let currentSection = 'C';
         let currentLevel = 0;
-        let wordToGuess = levels[currentLevel].word.toUpperCase();
-        let wordDescription = levels[currentLevel].description;
+        let wordToGuess = levels[currentSection][currentLevel].word.toUpperCase();
+        let wordDescription = levels[currentSection][currentLevel].description;
 
         let guessedWord = Array(wordToGuess.length).fill('_');
         let incorrectGuesses = 0;
@@ -125,7 +182,6 @@
 
         function checkGuess(letter) {
             if (lettersGuessed.includes(letter)) {
-                // Solo mostrar aviso si la letra ingresada es incorrecta y aún no se ha utilizado
                 if (!wordToGuess.includes(letter)) {
                     alert(`Ya has intentado con la letra ${letter}. Intenta con otra.`);
                 }
@@ -151,13 +207,9 @@
                 alert('¡Felicidades! ¡Has ganado!');
                 nextLevel();
             } else if (incorrectGuesses >= maxIncorrectGuesses) {
-                alert('¡Perdiste, gil! La palabra correcta era: ' + wordToGuess);
+                alert('¡Perdiste! La palabra correcta era: ' + wordToGuess);
                 resetGame();
             }
-        }
-
-        function showHint() {
-            showDescription();
         }
 
         function showDescription() {
@@ -170,33 +222,32 @@
 
         function nextLevel() {
             currentLevel++;
-            if (currentLevel < levels.length) {
-                wordToGuess = levels[currentLevel].word.toUpperCase();
-                wordDescription = levels[currentLevel].description;
+            if (currentLevel < levels[currentSection].length) {
+                wordToGuess = levels[currentSection][currentLevel].word.toUpperCase();
+                wordDescription = levels[currentSection][currentLevel].description;
                 guessedWord = Array(wordToGuess.length).fill('_');
                 incorrectGuesses = 0;
                 lettersGuessed = [];
                 updateDisplay();
                 resetHangman();
-                // Limpiar la descripción al pasar al siguiente nivel
                 document.getElementById('description').innerHTML = '';
-                showLetterCount(); // Agregamos esta línea para mostrar la cantidad de letras al pasar al siguiente nivel
+                showLetterCount();
             } else {
-                alert('¡Felicidades! Has completado todos los niveles.');
+                alert('¡Felicidades! Has completado todos los niveles de la sección ' + currentSection);
                 resetGame();
             }
         }
 
         function resetGame() {
             currentLevel = 0;
-            wordToGuess = levels[currentLevel].word.toUpperCase();
-            wordDescription = levels[currentLevel].description;
+            wordToGuess = levels[currentSection][currentLevel].word.toUpperCase();
+            wordDescription = levels[currentSection][currentLevel].description;
             guessedWord = Array(wordToGuess.length).fill('_');
             incorrectGuesses = 0;
             lettersGuessed = [];
             updateDisplay();
             resetHangman();
-            showLetterCount(); // Agregamos esta línea para mostrar la cantidad de letras al reiniciar el juego
+            showLetterCount();
         }
 
         function resetHangman() {
@@ -209,7 +260,7 @@
         function toggleHintButton() {
             const button = document.getElementById('hint-button');
             if (button.innerText === 'Obtener Pista') {
-                showHint();
+                showDescription();
                 button.innerText = 'Ocultar Pista';
             } else {
                 document.getElementById('description').innerHTML = '';
@@ -220,6 +271,24 @@
         function showLetterCount() {
             const letterCountDiv = document.getElementById('letter-count');
             letterCountDiv.innerText = `Cantidad de letras: ${wordToGuess.length}`;
+        }
+
+        function selectSection(section) {
+            currentSection = section;
+            currentLevel = 0;
+            wordToGuess = levels[currentSection][currentLevel].word.toUpperCase();
+            wordDescription = levels[currentSection][currentLevel].description;
+            guessedWord = Array(wordToGuess.length).fill('_');
+            incorrectGuesses = 0;
+            lettersGuessed = [];
+            updateDisplay();
+            resetHangman();
+            document.getElementById('description').innerHTML = '';
+            showLetterCount();
+            // Hacer visible la sección seleccionada y ocultar las demás
+            for (const sec of Object.keys(levels)) {
+                document.getElementById(`section-${sec}`).style.display = sec === currentSection ? 'block' : 'none';
+            }
         }
     </script>
 
