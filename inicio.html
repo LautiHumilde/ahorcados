@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Juego de Ahorcado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f0f0f0; /* Color de fondo */
+        }
+        .section-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            background-color: #fff; /* Fondo de los cuadros de sección */
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .section-button {
+            font-size: 1.2em;
+            padding: 10px;
+            cursor: pointer;
+            border: 2px solid #ccc; /* Borde de los cuadros de sección */
+            border-radius: 5px;
+            transition: background-color 0.3s; /* Transición suave del color de fondo */
+        }
+        .section-button:hover {
+            background-color: #ddd; /* Color de fondo al pasar el ratón sobre el cuadro de sección */
+        }
+        .completed-levels-button {
+    font-size: 16px;  /* Ajusta el tamaño según tus preferencias */
+    padding: 5px 10px;  /* Ajusta el espaciado interno según tus preferencias */
+    margin-left: 5px;  /* Agrega este estilo para ajustar el margen izquierdo */
+}
+
+    </style>
+</head>
+<body>
+
+    <h1>Bienvenido al Juego de Ahorcado</h1>
+
+    <div class="section-buttons">
+        <div class="section-button" onclick="startGame('C')">Sección C</div>
+        <div class="section-button" onclick="startGame('I')">Sección I</div>
+        <div class="section-button" onclick="startGame('T')">Sección T</div>
+    </div>
+
+
+
+
+
+    <div>
+        <button onclick="selectSection('C')">Sección C</button>
+        <button onclick="showCompletedLevels('C')" class="completed-levels-button">Niveles Pasados</button>
+    </div>
+    
+    <div>
+        <button onclick="selectSection('I')">Sección I</button>
+        <button onclick="showCompletedLevels('I')" class="completed-levels-button">Niveles Pasados</button>
+    </div>
+    
+    <div>
+        <button onclick="selectSection('T')">Sección T</button>
+        <button onclick="showCompletedLevels('T')" class="completed-levels-button">Niveles Pasados</button>
+    </div>
+    
+    
+    
+
+
+    <script>
+        function startGame(section) {
+            localStorage.setItem('selectedSection', section);
+            window.location.href = 'ahorcado.html';
+        }
+        function checkLevelCompletion() {
+    const totalLevels = levels[currentSection].length;
+    if (currentLevel >= totalLevels) {
+        alert(`¡Felicidades! Has completado todos los niveles de la sección ${currentSection}`);
+        // Puedes agregar aquí la lógica para volver a la selección de secciones o realizar alguna acción adicional.
+        // Por ahora, simplemente volvamos a la página de inicio.
+        window.location.href = 'inicio.html';
+    }
+}
+    </script>
+
+</body>
+</html>
