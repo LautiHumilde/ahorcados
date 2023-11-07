@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahorcado - Juego</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            color: #007BFF;
+        }
+        #word-display {
+            font-size: 2em;
+            margin-bottom: 20px;
+            letter-spacing: 10px;
+            word-spacing: 20px;
+        }
+        #hangman-container {
+    width: 150px;
+    height: 200px;
+    position: relative;
+    margin: 20px auto;
+}
+.hangman-part {
+    position: absolute;
+    background-color: #333;
+    display: block;
+}
+#head {
+    top: 0;
+    left: 65px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+#body {
+    top: 20px;
+    left: 75px;
+    width: 5px;
+    height: 60px;
+}
+#left-arm {
+    top: 30px;
+    left: 60px;
+    width: 15px;
+    height: 5px;
+    transform: rotate(-45deg);
+}
+#right-arm {
+    top: 30px;
+    left: 75px;
+    width: 15px;
+    height: 5px;
+    transform: rotate(45deg);
+}
+#left-leg {
+    top: 80px;
+    left: 65px;
+    width: 15px;
+    height: 5px;
+    transform: rotate(-45deg);
+}
+#right-leg {
+    top: 80px;
+    left: 75px;
+    width: 15px;
+    height: 5px;
+    transform: rotate(45deg);
+}
+.stickman {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 20px;
+}
+.stick {
+    width: 5px;
+    height: 40px;
+    background-color: black;
+    margin: 2px;
+}
+        #word-blanks span {
+            font-size: 1.5em;
+            margin-right: 5px;
+        }
+        #letters-guessed {
+            margin-top: 10px;
+        }
+        #description {
+            margin-top: 10px;
+        }
+        #word-and-definition {
+            margin-top: 20px;
+        }
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #win-message, #lose-message {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            display: none;
+        }
+        #win-message a {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        #next-level-button {
+            margin-left: 1000px; /* Ajusta el margen izquierdo según sea necesario */
+        }
+    </style>
+</head>
+<body>
+    <div id="level-info" style="position: absolute; top: 10px; left: 10px;"></div>
+    <h1>Juego de Ahorcado - Adivina la Palabra</h1>
+
+    <div id="word-display"></div>
+    
+    <div id="hangman-container">
+        <div id="head" class="hangman-part"></div>
+        <div id="body" class="hangman-part"></div>
+        <div id="left-arm" class="hangman-part"></div>
+        <div id="right-arm" class="hangman-part"></div>
+        <div id="left-leg" class="hangman-part"></div>
+        <div id="right-leg" class="hangman-part"></div>
+    </div>
+
+    <div id="letters-guessed">Letras Adivinadas: </div>
+    
+    <div id="description"></div>
+
+    <div id="word-blanks"></div>
+    <div>
+        <label for="letter-input">Ingrese una letra: </label>
+        <input type="text" id="letter-input" maxlength="1" oninput="this.value = this.value.toUpperCase()" onkeyup="guessLetter()">
+    </div>
+
+    <button onclick="showHint()">Ver Pista</button>
+    <button onclick="goBack()">Volver a las selecciones</button>
+
+    <div id="word-and-definition"></div>
+    
+    <button id="next-level-button" onclick="nextLevel()" style="display: none;">Siguiente Nivel</button>
+
+    <div id="lose-message">
+        <p>Haz pasado el límite de letras incorrectas.</p>
+        <button onclick="retryLevel()">Volver a Intentarlo</button>
+    </div>
+
+    <div id="win-message">
+        <p>Felicidades, ¡has completado todos los niveles de esta sección!</p>
+        <p>Ahora presiona <a href="inicio.html">volver a las selecciones</a> para jugar algunos que no hayas jugado.</p>
+    </div>
+
+    <script>
+        const levels = {
+            'C': [
+                { word: "COMPUTACION", description: "Proceso de diseñar y construir un sistema de cómputo, incluyendo hardware y software. (11 letras)" },
+                { word: "COMUNICACION", description: "Intercambio de información entre dos o más partes, utilizando símbolos, palabras o gestos. (13 letras)" },
+                { word: "CREATIVIDAD", description: "Facultad de crear, inventar y producir nuevas ideas, conceptos o cosas originales. (11 letras)" },
+                { word: "CULTURA", description: "Conjunto de conocimientos, costumbres, creencias y valores que caracterizan a un grupo social. (7 letras)" },
+                { word: "CIBERNETICA", description: "Ciencia que estudia los sistemas de control, comunicación y regulación en seres vivos y máquinas. (11 letras)" },
+                { word: "CIRCUITO", description: "Conjunto de componentes electrónicos interconectados que realizan una función específica. (8 letras)" },
+            ],
+            'I': [
+                { word: "INOVACION", description: "Introducción de novedades o cambios en un producto, idea o proceso. (9 letras)" },
+                { word: "INTELIGENCIA", description: "Capacidad de aprender, razonar, resolver problemas y adaptarse al entorno. (10 letras)" },
+                { word: "IMAGINACION", description: "Facultad de crear imágenes, ideas o conceptos en la mente que no están presentes en la realidad. (11 letras)" },
+                { word: "IDENTIDAD", description: "Conjunto de características que individualizan a una persona o cosa y la distinguen de las demás. (9 letras)" },
+                { word: "IGUALDAD", description: "Principio que postula la equiparación de derechos, oportunidades y trato para todas las personas. (7 letras)" },
+                { word: "IMPREDICIBLE", description: "Que no se puede prever ni anticipar con certeza. (12 letras)" },
+            ],
+            'T': [
+                { word: "TENDENCIA", description: "Dirección o inclinación hacia cierto modo de comportamiento, pensamiento o acción. (8 letras)" },
+                { word: "TRANSFORMAR", description: "Cambiar la forma, naturaleza o estructura de algo. (11 letras)" },
+                { word: "TECNOLOGIA", description: "Conjunto de conocimientos y técnicas aplicadas para el desarrollo de productos y servicios. (10 letras)" },
+                { word: "TRABAJO", description: "Actividad que realiza una persona para producir bienes o servicios a cambio de una compensación. (7 letras)" },
+                { word: "TENACIDAD", description: "Persistencia y firmeza en la realización de un objetivo a pesar de las dificultades. (8 letras)" },
+                { word: "TALENTO", description: "Capacidad natural o habilidad especial para realizar ciertas actividades de manera destacada. (7 letras)" },
+            ],
+        };
+
+        const queryParams = new URLSearchParams(window.location.search);
+        const section = queryParams.get('section');
+        const currentLevel = levels[section];
+
+        let currentWordIndex = 0;
+        let currentWord = currentLevel[currentWordIndex].word.toUpperCase();
+        let guessedLetters = [];
+        let incorrectAttempts = 0;
+
+        function startGame() {
+            displayWordBlanks();
+        }
+
+        function displayWordBlanks() {
+            const wordBlanksContainer = document.getElementById('word-blanks');
+            wordBlanksContainer.innerHTML = '';
+            for (let i = 0; i < currentWord.length; i++) {
+                wordBlanksContainer.innerHTML += '<span>_</span>';
+            }
+        }
+
+        function guessLetter() {
+            // Lógica para verificar la letra y actualizar la pantalla
+            const letterInput = document.getElementById('letter-input');
+            const letter = letterInput.value.toUpperCase();
+
+            if (!guessedLetters.includes(letter)) {
+                guessedLetters.push(letter);
+                updateGuessedLetters();
+                if (currentWord.includes(letter)) {
+                    updateWordDisplay(letter);
+                    if (checkWordGuessed()) {
+                        displayWordAndDefinition();
+                        showNextLevelButton();
+                    }
+                } else {
+                    handleIncorrectAttempt();
+                }
+            }
+            letterInput.value = '';
+
+            if (incorrectAttempts === 6) {
+                displayWordAndDefinition();
+                showRetryButton();
+            }
+        }
+
+        function updateGuessedLetters() {
+            const lettersGuessedContainer = document.getElementById('letters-guessed');
+            lettersGuessedContainer.textContent = 'Letras Adivinadas: ' + guessedLetters.join(', ');
+        }
+
+        function updateWordDisplay(letter) {
+            const wordBlanks = document.getElementById('word-blanks').getElementsByTagName('span');
+            for (let i = 0; i < currentWord.length; i++) {
+                if (currentWord[i] === letter) {
+                    wordBlanks[i].textContent = letter;
+                }
+            }
+        }
+
+        function checkWordGuessed() {
+            const wordBlanks = document.getElementById('word-blanks').getElementsByTagName('span');
+            for (let i = 0; i < wordBlanks.length; i++) {
+                if (wordBlanks[i].textContent === '_') {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function handleIncorrectAttempt() {
+            // Lógica para manejar intentos incorrectos
+            incorrectAttempts++;
+            updateHangman();
+            if (incorrectAttempts === 6) {
+                displayWordAndDefinition();
+                showRetryButton();
+            }
+        }
+
+        function updateHangman() {
+            // Lógica para actualizar el ahorcado según los intentos incorrectos
+            const hangmanParts = ['head', 'body', 'left-arm', 'right-arm', 'left-leg', 'right-leg'];
+            const lostParts = incorrectAttempts - 1;
+
+            if (lostParts >= 0 && lostParts < hangmanParts.length) {
+                const lostPartId = hangmanParts[lostParts];
+                document.getElementById(lostPartId).style.display = 'none';
+            }
+        }
+
+        function showRetryButton() {
+            const loseMessage = document.getElementById('lose-message');
+            loseMessage.style.display = 'block';
+        }
+
+        function retryLevel() {
+            resetGame();
+            startGame();
+            const loseMessage = document.getElementById('lose-message');
+            loseMessage.style.display = 'none';
+        }
+
+        function displayWordAndDefinition() {
+            const wordAndDefinitionContainer = document.getElementById('word-and-definition');
+            if (currentWordIndex === currentLevel.length - 1) {
+                wordAndDefinitionContainer.innerHTML = `<p>Palabra: ${currentWord}</p><p>Definición: ${currentLevel[currentWordIndex].description}</p>`;
+            }
+        }
+
+        function showNextLevelButton() {
+            const nextLevelButton = document.getElementById('next-level-button');
+            nextLevelButton.style.display = 'block';
+        }
+
+        function showHint() {
+            alert(currentLevel[currentWordIndex].description);
+        }
+
+        function goBack() {
+            window.location.href = 'inicio.html';
+        }
+
+        function nextLevel() {
+        currentWordIndex++;
+        if (currentWordIndex < currentLevel.length) {
+            resetGame();
+            startGame();
+        } else {
+            showWinMessage();
+        }
+    }
+
+        function resetGame() {
+            currentWord = currentLevel[currentWordIndex].word.toUpperCase();
+            guessedLetters = [];
+            incorrectAttempts = 0;
+            resetHangman();
+            resetWordDisplay();
+            hideNextLevelButton();
+            clearWordAndDefinition();
+            updateLevelInfo();
+        }
+
+        
+
+        function resetHangman() {
+            // Lógica para reiniciar el ahorcado
+            const hangmanParts = ['head', 'body', 'left-arm', 'right-arm', 'left-leg', 'right-leg'];
+            for (const partId of hangmanParts) {
+                document.getElementById(partId).style.display = 'block';
+            }
+        }
+
+        function resetWordDisplay() {
+            const wordBlanks = document.getElementById('word-blanks').getElementsByTagName('span');
+            for (let i = 0; i < wordBlanks.length; i++) {
+                wordBlanks[i].textContent = '_';
+            }
+        }
+
+        function hideNextLevelButton() {
+            const nextLevelButton = document.getElementById('next-level-button');
+            nextLevelButton.style.display = 'none';
+        }
+
+        function clearWordAndDefinition() {
+            const wordAndDefinitionContainer = document.getElementById('word-and-definition');
+            wordAndDefinitionContainer.innerHTML = '';
+        }
+
+        function updateLevelInfo() {
+            const levelInfoContainer = document.getElementById('level-info');
+            levelInfoContainer.textContent = `Nivel ${currentWordIndex + 1}/${currentLevel.length}`;
+        }
+
+        window.onload = startGame;
+    </script>
+</body>
+</html>

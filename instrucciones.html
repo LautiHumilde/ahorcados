@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instrucciones del Juego de Ahorcado</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 20px auto;
+            background-color: #f9f9f9;
+            color: #333;
+            max-width: 600px; /* Añadido para limitar el ancho del contenido */
+        }
+        h1 {
+            color: #007BFF;
+        }
+        p {
+            margin-top: 20px;
+            text-align: justify; /* Añadido para justificar el texto */
+        }
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 20px 40px;
+            font-size: 24px;
+            cursor: pointer;
+            margin-top: 40px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Instrucciones del Juego de Ahorcado</h1>
+    <p>Aquí encontrarás información sobre el uso de cada botón en las páginas de inicio y ahorcado.</p>
+    
+    <h2>Secciones</h2>
+    <p>Al seleccionar "Jugar" en la página de inicio, te llevará a elegir entre 3 secciones. Puedes elegir la que más te guste y comenzar a jugar.</p>
+    
+    <h2>Ahorcado</h2>
+    <p>En este punto, el juego ya ha comenzado. Puedes ver una persona y debajo de ella hay botones que dicen "Ver Pista" y "Volver a las Selecciones". El botón "Ver Pista" te ayuda a adivinar la palabra de una forma más fácil. Si prefieres no ver la pista y adivinar por tu cuenta, simplemente omite este botón. El botón "Volver a las Selecciones" te lleva de nuevo a elegir la sección que deseas jugar.</p>
+
+    <button onclick="goBack()">Volver</button>
+
+    <script>
+        function goBack() {
+            window.location.href = 'bienvenidos.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenidos al Juego de Ahorcado</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        #welcome-container {
+            max-width: 800px;
+            margin: 100px auto;
+        }
+        h1 {
+            font-size: 3em;
+            color: #007BFF;
+        }
+        p {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 30px 60px;
+            font-size: 2em;
+            cursor: pointer;
+            margin-top: 40px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="welcome-container">
+        <h1>Bienvenidos al Juego de Ahorcado</h1>
+        <p>¿Quieres saber por qué nos llamamos así? Presiona Jugar y lo averiguarás.</p>
+        <button onclick="startGame()">Jugar</button>
+        <button onclick="goToInstructions()">Instrucciones</button>
+    </div>
+
+    <script>
+        function startGame() {
+            window.location.href = 'inicio.html';
+        }
+
+        function goToInstructions() {
+            window.location.href = 'instrucciones.html';
+        }
+    </script>
+</body>
+</html>

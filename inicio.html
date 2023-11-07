@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahorcado - Inicio</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f9f9f9; /* Color de fondo similar al de ahorcados.html */
+            color: #333;
+        }
+        h1 {
+            color: #007BFF;
+            margin-bottom: 30px; /* Aumentado el margen inferior para mejorar la apariencia */
+            font-size: 36px; /* Aumentado el tamaño de la fuente */
+        }
+        button {
+            background-color: #007BFF; /* Color de fondo similar al de ahorcados.html */
+            color: #fff; /* Color del texto */
+            border: none;
+            padding: 20px 40px; /* Ajustado el tamaño del botón */
+            font-size: 24px; /* Aumentado el tamaño de la fuente */
+            cursor: pointer;
+            margin-top: 20px;
+            margin-bottom: 20px; /* Aumentado el margen inferior para mejorar la apariencia */
+        }
+        button:hover {
+            background-color: #0056b3; /* Cambia el color de fondo al pasar el ratón sobre el botón */
+        }
+    </style>
+</head>
+<body>
+    <h1>Seleccione una sección:</h1>
+    <button onclick="startGame('C')">Sección C</button>
+    <button onclick="startGame('I')">Sección I</button>
+    <button onclick="startGame('T')">Sección T</button>
+    <br> <!-- Añadido un salto de línea para mejorar la apariencia -->
+    <button onclick="goToWelcome()">Volver</button>
+
+    <script>
+        function startGame(section) {
+            window.location.href = `ahorcado.html?section=${section}`;
+        }
+
+        function goToWelcome() {
+            window.location.href = 'bienvenidos.html';
+        }
+    </script>
+</body>
+</html>
